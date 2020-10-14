@@ -71,6 +71,8 @@ bool curl_win32_idn_to_ascii(const char *in, char **out);
 /* Need dbus so we can query pacrunner for proxy */
 #include <dbus/dbus.h>
 #endif /* CURL_DISABLE_PROXY */
+#include <sys/stat.h>
+#define PROXY_STATE_FILE "/run/pacrunner/pac_active"
 
 #include "urldata.h"
 #include "netrc.h"
@@ -2208,6 +2210,7 @@ static char *detect_proxy(struct connectdata *conn, char *url)
   const char *protop = conn->handler->scheme;
   char *envp = proxy_env;
   char *prox;
+  struct stat sbuff;
 
   /* Now, build <protocol>_proxy and check for such a one to use */
   while(*protop)
@@ -2242,7 +2245,9 @@ static char *detect_proxy(struct connectdata *conn, char *url)
     proxy = prox; /* use this */
   }
 
-  if(!proxy) {
+  /* Check that no proxy is set AND that pacdiscovery has set pacrunner
+   * with a PAC script */
+  if(!proxy && stat(PROXY_STATE_FILE, &sbuff) == 0) {
     /* No protocol-specific proxy set in the environment.
      *     Fallback to pacrunner autoproxy lookup */
     autoproxy_ret = query_pacrunner_proxy(url,
