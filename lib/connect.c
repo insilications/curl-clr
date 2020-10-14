@@ -1534,7 +1534,7 @@ CURLcode Curl_socket(struct connectdata *conn,
   }
   else
     /* opensocket callback not set, so simply create the socket now */
-    *sockfd = socket(addr->family, addr->socktype, addr->protocol);
+    *sockfd = socket(addr->family, addr->socktype | SOCK_CLOEXEC, addr->protocol);
 
   if(*sockfd == CURL_SOCKET_BAD)
     /* no socket, no connection */

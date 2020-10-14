@@ -186,6 +186,8 @@ AC_DEFINE_UNQUOTED(OS, "${host}", [cpu-machine-OS])
 # Silence warning: ar: 'u' modifier ignored since 'D' is the default
 AC_SUBST(AR_FLAGS, [cr])
 
+AC_USE_SYSTEM_EXTENSIONS
+
 dnl This defines _ALL_SOURCE for AIX
 CURL_CHECK_AIX_ALL_SOURCE
 

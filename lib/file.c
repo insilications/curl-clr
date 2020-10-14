@@ -190,7 +190,7 @@ static CURLcode file_connect(struct connectdata *conn, bool *done)
     return CURLE_URL_MALFORMAT;
   }
 
-  fd = open_readonly(real_path, O_RDONLY);
+  fd = open_readonly(real_path, O_RDONLY|O_CLOEXEC);
   file->path = real_path;
 #endif
   file->freepath = real_path; /* free this when done */
@@ -283,7 +283,7 @@ static CURLcode file_upload(struct connectdata *conn)
   else
     mode = MODE_DEFAULT|O_TRUNC;
 
-  fd = open(file->path, mode, conn->data->set.new_file_perms);
+  fd = open(file->path, mode | O_CLOEXEC, conn->data->set.new_file_perms);
   if(fd < 0) {
     failf(data, "Can't open %s for writing", file->path);
     return CURLE_WRITE_ERROR;
